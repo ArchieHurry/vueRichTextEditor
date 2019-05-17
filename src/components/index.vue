@@ -1,21 +1,24 @@
 <template>
   <div :id="`vueRichEditor${timeId}`" :style="{height: height}" class="vre_vueRichEditor">
     <div :id="`toolbar${timeId}`" class="vre_toolbar">
-      <div class="vre_buttonDiv">h1</div>
-      <div class="vre_buttonDiv">b</div>
+      <div class="vre_buttonDiv" @click="formatNodes('h1')">h1</div>
+      <div class="vre_buttonDiv" @click="formatNodes('h2')">h2</div>
+      <div class="vre_buttonDiv" @click="formatNodes('b')">b</div>
     </div>
     <div :id="`content${timeId}`" :contenteditable="canEdit" class="vre_content"></div>
   </div>
 </template>
 
 <script>
+  import E from './eventHandler'
   export default {
     name: "vueRichEditor",
     data () {
       return {
         content: null,
         toolbar: null,
-        timeId: ''
+        timeId: '',
+        nodes: []
       }
     },
     props: {
@@ -35,10 +38,30 @@
       this.init()
     },
     methods: {
+      formatNodes (tagName) {
+        const s = this
+        for (let i = 0; i < s.nodes.length; i++) {
+          let val = s.nodes[i]
+          let newNode = document.createElement(tagName)
+          newNode.appendChild( val.cloneNode(true))
+          val.parentNode.replaceChild(newNode, val)
+        }
+      },
       init () {
         const s = this;
         s.toolbar = document.getElementById('toolbar' + s.timeId);
         s.content = document.getElementById('content' + s.timeId);
+        E.addHandler(s.content,'mouseup', function () {
+          let sel = window.getSelection()
+          s.nodes = []
+          let flag = false
+          for (let i = 0; i < s.content.childNodes.length; i++) {
+            let val = s.content.childNodes[i]
+            if (val.isSameNode(sel.getRangeAt(0).startContainer.parentNode) || val.isSameNode(sel.anchorNode)) flag = true
+            if (flag) s.nodes.push(val)
+            if (val.isSameNode(sel.getRangeAt(0).endContainer.parentNode) || val.isSameNode(sel.focusNode)) flag = false
+          }
+        })
       },
       appendContent  (html) {
         this.content.innerHTML += html
