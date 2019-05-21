@@ -1,11 +1,23 @@
 <template>
   <div :id="`vueRichEditor${timeId}`" :style="{height: height}" class="vre_vueRichEditor">
     <div :id="`toolbar${timeId}`" class="vre_toolbar">
-      <div class="vre_buttonDiv" @click="formatNodes('h1')">h1</div>
-      <div class="vre_buttonDiv" @click="formatNodes('h2')">h2</div>
-      <div class="vre_buttonDiv" @click="formatNodes('b')">b</div>
+      <div class="vre_buttonDiv vre_hover">
+        <span>H</span>
+        <div class="vre_hoverDiv">
+          <p @click="formatNodes('H1')">H1</p>
+          <p @click="formatNodes('H2')">H2</p>
+          <p @click="formatNodes('H3')">H3</p>
+          <p @click="formatNodes('H4')">H4</p>
+          <p @click="formatNodes('H5')">H5</p>
+          <p @click="formatNodes('P')">p</p>
+        </div>
+      </div>
+      <div class="vre_buttonDiv" @click="formatNodes('STRONG')"><span>B</span></div>
+      <div class="vre_buttonDiv"  @click="formatNodes('U')"><span>U</span></div>
+      <div class="vre_buttonDiv" @click="formatNodes('I')"><span>I</span></div>
+      <div class="vre_buttonDiv"><span>A</span></div>
     </div>
-    <div :id="`content${timeId}`" :contenteditable="canEdit" class="vre_content"></div>
+    <div :id="`content${timeId}`" :contenteditable="canEdit" class="vre_content vre_preview"></div>
   </div>
 </template>
 
@@ -19,7 +31,8 @@
         toolbar: null,
         timeId: '',
         sel: null,
-        range: null
+        range: null,
+        nodes: []
       }
     },
     props: {
@@ -57,6 +70,7 @@
       },
       insertHtml(html) {
         const s = this;
+        if (!s.canEdit) return;
         let dom = s.content;
         if (!s.sel || !s.range) { // 没有取得焦点插入末尾
           dom.innerHTML = dom.innerHTML + html;
@@ -87,13 +101,68 @@
         s.__getSelAndRange();
         if (s.timelyGetHtml) s.$emit('htmlChange', s.content.innerHTML)
       },
+      __getNodes () {
+        const s = this
+        let sel = s.sel
+        s.nodes = []
+        let flag = false
+        for (let i = 0; i < s.content.childNodes.length; i++) {
+          let val = s.content.childNodes[i]
+          if (val.isSameNode(sel.getRangeAt(0).startContainer.parentNode) || val.isSameNode(sel.anchorNode)) flag = true
+          if (flag) s.nodes.push(val)
+          if (val.isSameNode(sel.getRangeAt(0).endContainer.parentNode) || val.isSameNode(sel.focusNode)) flag = false
+        }
+      },
+      __formatH (tagName) { // h1-h6标签需要在选中的区域全部替换
+        const s = this;
+        let cloneRange = s.range.cloneContents();
+        let el = document.createElement(tagName);
+        el.appendChild(cloneRange);
+        let html = el.innerHTML;
+        if (s.nodes.length === 1) html = s.nodes[0].innerHTML;
+        html = html.replace(/<h1>/g, '');
+        html = html.replace(/<\/h1>/g, '<br>');
+        html = html.replace(/<h2>/g, '');
+        html = html.replace(/<\/h2>/g, '<br>');
+        html = html.replace(/<h3>/g, '');
+        html = html.replace(/<\/h3>/g, '<br>');
+        html = html.replace(/<h4>/g, '');
+        html = html.replace(/<\/h4>/g, '<br>');
+        html = html.replace(/<h5>/g, '');
+        html = html.replace(/<\/h5>/g, '<br>');
+        el.innerHTML = html;
+        if (s.nodes.length === 1) s.nodes[0].parentNode.replaceChild(el, s.nodes[0]);
+        else { s.range.deleteContents();s.range.insertNode(el); }
+        el = null;cloneRange = null;
+      },
       formatNodes (tagName) {
         const s = this;
         if (!s.range) return;
         let cloneRange = s.range.cloneContents();
-        s.range.deleteContents();
         let el = document.createElement(tagName);
         el.appendChild(cloneRange);
+        s.__getNodes();
+        if ('H1,H2,H3,H4,H5,P'.indexOf(tagName) > -1) { s.__formatH(tagName); return; }
+        if (el.children.length === 1) { // 还原
+          if (el.children[0].tagName === el.tagName) {
+            let mid = document.createElement('span');
+            let html = el.innerHTML;
+            let str = `<${tagName.toLowerCase()}>`;
+            str = new RegExp(str, 'g');
+            let str1 = `</${tagName.toLowerCase()}>`;
+            str1 = new RegExp(str1, 'g');
+            html = html.replace(str, '');
+            html = html.replace(str1, '');
+            html = html.replace(/<span>/g, '');
+            html = html.replace(/<\/span>/g, '');
+            mid.innerHTML = html;
+            s.range.deleteContents();
+            s.range.insertNode(mid);
+            el = null;cloneRange = null;
+            return;
+          }
+        }
+        s.range.deleteContents();
         s.range.insertNode(el);
         el = null;cloneRange = null;
       },
@@ -144,9 +213,7 @@
       width: 16px;
       padding: 5px;
       float: left;
-      &:hover{
-        font-weight: bold;
-      }
+      &:hover{ span{font-weight: bold;} }
     }
     &_content {
       width: 100%;
@@ -157,5 +224,33 @@
       overflow: auto;
       outline: none;
     }
+    &_hoverDiv {
+      display: none;
+      position: absolute;
+      z-index: 20;
+      background-color: white;
+      text-align: center;
+      left: 0;
+      border: 1px solid #cccccc;
+      width: 60px;
+      padding: 5px 0;
+      &:hover{
+        font-weight: normal;
+      }
+      p{
+        padding: 5px 20px;
+      }
+      p:hover{
+        font-weight: bold;
+
+      }
+    }
+    &_hover:hover{
+      .vre_hoverDiv{
+        display: block;
+      }
+    }
+  }
+  .vre_preview {
   }
 </style>
