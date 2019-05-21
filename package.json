@@ -1,7 +1,7 @@
 {
   "name": "vue-rich-text-editor",
   "description": "Rich text editor made with vue",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "author": "archiehurry <534995272@qq.com>",
   "license": "MIT",
   "main": "./dist/vrte.js",
@@ -17,7 +17,8 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
-    "vue": "^2.5.11"
+    "vue": "^2.5.11",
+    "vue-rich-text-editor": "^0.0.3"
   },
   "browserslist": [
     "> 1%",

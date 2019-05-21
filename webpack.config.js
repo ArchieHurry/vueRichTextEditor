@@ -7,6 +7,9 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
+    library: 'vueRichTextEditor',
+    libraryTarget: 'umd',
+    umdNamedDefine: true,
     filename: 'vrte.js'
   },
   module: {
