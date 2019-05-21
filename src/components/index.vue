@@ -15,9 +15,9 @@
       <div class="vre_buttonDiv" @click="formatNodes('STRONG')"><span>B</span></div>
       <div class="vre_buttonDiv"  @click="formatNodes('U')"><span>U</span></div>
       <div class="vre_buttonDiv" @click="formatNodes('I')"><span>I</span></div>
-      <div class="vre_buttonDiv"><span>A</span></div>
     </div>
     <div :id="`content${timeId}`" :contenteditable="canEdit" class="vre_content vre_preview"></div>
+<!--    <div class="resizeBar"></div>-->
   </div>
 </template>
 
@@ -102,19 +102,20 @@
         if (s.timelyGetHtml) s.$emit('htmlChange', s.content.innerHTML)
       },
       __getNodes () {
-        const s = this
-        let sel = s.sel
-        s.nodes = []
-        let flag = false
+        const s = this;
+        let sel = s.sel;
+        s.nodes = [];
+        let flag = false;
         for (let i = 0; i < s.content.childNodes.length; i++) {
-          let val = s.content.childNodes[i]
-          if (val.isSameNode(sel.getRangeAt(0).startContainer.parentNode) || val.isSameNode(sel.anchorNode)) flag = true
-          if (flag) s.nodes.push(val)
+          let val = s.content.childNodes[i];
+          if (val.isSameNode(sel.getRangeAt(0).startContainer.parentNode) || val.isSameNode(sel.anchorNode)) flag = true;
+          if (flag) s.nodes.push(val);
           if (val.isSameNode(sel.getRangeAt(0).endContainer.parentNode) || val.isSameNode(sel.focusNode)) flag = false
         }
       },
       __formatH (tagName) { // h1-h6标签需要在选中的区域全部替换
         const s = this;
+        s.__getSelAndRange();
         let cloneRange = s.range.cloneContents();
         let el = document.createElement(tagName);
         el.appendChild(cloneRange);
@@ -130,6 +131,10 @@
         html = html.replace(/<\/h4>/g, '<br>');
         html = html.replace(/<h5>/g, '');
         html = html.replace(/<\/h5>/g, '<br>');
+        html = html.replace(/<p><\/p>/g, '');
+        html = html.replace(/<p><br><\/p>/g, '');
+        html = html.replace(/<br><br>/g, '');
+        html = html.replace(/<([a-z]+?)(?:\s+?[^>]*?)?>\s*?<\/\1>/ig,'');
         el.innerHTML = html;
         if (s.nodes.length === 1) s.nodes[0].parentNode.replaceChild(el, s.nodes[0]);
         else { s.range.deleteContents();s.range.insertNode(el); }
@@ -251,6 +256,12 @@
       }
     }
   }
-  .vre_preview {
+  .resizeBar {
+    height: 2px;
+    background-color: #DCE8E8;
+    position: absolute;
+    bottom: -2px;
+    width: 100%;
+    cursor: n-resize;
   }
 </style>
