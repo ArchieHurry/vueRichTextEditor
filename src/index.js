@@ -1,7 +1,7 @@
 import vueRichEditor from './components/index.vue'
 const obj = {
   install (Vue, options) {
-    Vue.component('vueRichEditor', vueRichEditor)
+    Vue.component('vueRichTextEditor', vueRichEditor)
   }
 }
 if (typeof window !== 'undefined' && window.Vue) {

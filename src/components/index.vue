@@ -15,6 +15,24 @@
       <div class="vre_buttonDiv" @click="formatNodes('STRONG')"><span>B</span></div>
       <div class="vre_buttonDiv"  @click="formatNodes('U')"><span>U</span></div>
       <div class="vre_buttonDiv" @click="formatNodes('I')"><span>I</span></div>
+      <div class="vre_buttonDiv">
+        <span @click="show.A = true">A</span>
+        <div class="vre_clickDiv" v-show="show.A" style="width: 215px" >
+          <p style="text-align: left">
+            link
+            <br>
+            <input type="text" v-model="config.A.link">
+          </p>
+          <p style="text-align: left">
+            value
+            <br>
+            <input type="text" v-model="config.A.value">
+          </p>
+          <p>
+            <button @click='insertHtml(`<a href="${config.A.link}">${config.A.value}</a>`);show.A = false' >confirm</button>
+          </p>
+        </div>
+      </div>
     </div>
     <div :id="`content${timeId}`" :contenteditable="canEdit" class="vre_content vre_preview"></div>
 <!--    <div class="resizeBar"></div>-->
@@ -24,9 +42,18 @@
 <script>
   import E from './eventHandler'
   export default {
-    name: "vueRichEditor",
+    name: "vueRichTextEditor",
     data () {
       return {
+        show: {
+          A: false
+        },
+        config: {
+          A: {
+            link: '',
+            value: ''
+          }
+        },
         content: null,
         toolbar: null,
         timeId: '',
@@ -49,6 +76,17 @@
         default: false
       }
     },
+    watch: {
+      show : {
+        handler: function (val, oldVal) {
+          if (!val.A) {
+            this.config.A.link = ''
+            this.config.A.value = ''
+          }
+        },
+        deep: true
+      }
+    },
     created() {
       this.timeId = new Date().valueOf()
     },
@@ -68,8 +106,17 @@
       getHtml () {
         return this.content.innerHTML
       },
+      __replaceNode (node, html) {
+        let div = document.createElement('div');
+        div.innerHTML = html;
+        node.parentNode.replaceChild(div.firstChild, node)
+      },
       insertHtml(html) {
         const s = this;
+        if (s.nodes.length === 1) {
+          s.__replaceNode(s.nodes[0], html)
+          return;
+        }
         if (!s.canEdit) return;
         let dom = s.content;
         if (!s.sel || !s.range) { // 没有取得焦点插入末尾
@@ -115,7 +162,6 @@
       },
       __formatH (tagName) { // h1-h6标签需要在选中的区域全部替换
         const s = this;
-        s.__getSelAndRange();
         let cloneRange = s.range.cloneContents();
         let el = document.createElement(tagName);
         el.appendChild(cloneRange);
@@ -142,6 +188,7 @@
       },
       formatNodes (tagName) {
         const s = this;
+        s.__getSelAndRange();
         if (!s.range) return;
         let cloneRange = s.range.cloneContents();
         let el = document.createElement(tagName);
@@ -175,12 +222,30 @@
         this.sel = window.getSelection();
         try { this.range = this.sel.getRangeAt(0);} catch (e) { this.range = null }
       },
+      __configTarget (target) {
+        switch (target.tagName) {
+          case 'A':
+            this.config.A = {
+              link: target.href,
+              value: target.innerText
+            };
+            this.show.A = true;
+            break;
+        }
+      },
       __init () {
         const s = this;
         s.toolbar = document.getElementById('toolbar' + s.timeId);
         s.content = document.getElementById('content' + s.timeId);
-        E.addHandler(s.content,'mouseup', function () {
-          s.__getSelAndRange()
+        E.addHandler(s.content,'mouseup', function (e) {
+          s.__getSelAndRange();
+          s.__getNodes();
+        });
+        E.addHandler(s.content, 'click', function (e) {
+          if (s.show.A) s.show.A= false
+          if ('A,IMG'.indexOf((e.target || e.srcElement).tagName) > -1) {
+            s.__configTarget(e.target || e.srcElement)
+          }
         });
         E.addHandler(s.content,'input', function () {
           s.__getSelAndRange();
@@ -206,8 +271,23 @@
       background-color: #DCE8E8;
       color: #555555;
       border-bottom: 1px solid #cccccc;
+      input{
+        width: 100%;
+        height: 22px;
+        outline: none;
+      }
+      button{
+        width: 100%;
+        font-size: 12px;
+        background-color: white;
+        border: 1px solid #cccccc;
+        padding: 5px 0;
+        cursor: pointer;
+        outline: none;
+      }
     }
     &_buttonDiv {
+      position: relative;
       user-select: none;
       cursor: pointer;
       display: inline-block;
@@ -228,8 +308,11 @@
       position: absolute;
       overflow: auto;
       outline: none;
+      ol,ul{
+        margin-left: 20px;
+      }
     }
-    &_hoverDiv {
+    &_hoverDiv,  &_clickDiv {
       display: none;
       position: absolute;
       z-index: 20;
@@ -247,7 +330,13 @@
       }
       p:hover{
         font-weight: bold;
-
+      }
+    }
+    &_clickDiv{
+      display: block;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      p:hover{
+        font-weight: normal;
       }
     }
     &_hover:hover{

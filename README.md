@@ -10,7 +10,7 @@
 import vueRichEditor from 'vue-rich-text-editor';
 Vue.use(vueRichEditor)
 
-<vue-rich-editor ref="editor"></vue-rich-editor>
+<vueRichTextEditor ref="editor"></vueRichTextEditor>
 ```
 
 ### vueRichTextEditor API Doc
@@ -51,7 +51,7 @@ Vue.use(vueRichEditor)
 import vueRichEditor from 'vue-rich-text-editor';
 Vue.use(vueRichEditor)
 
-<vue-rich-editor ref="editor"></vue-rich-editor>
+<vueRichTextEditor ref="editor"></vueRichTextEditor>
 ```
 
 ### vueRichTextEditor API Doc
@@ -82,3 +82,16 @@ Vue.use(vueRichEditor)
 ### 浏览器支持情况
 
 ##### IE10+, chrome, firefox 和其他现代浏览器
+
+
+### Upgraded content（升级的内容）
+
+#### 0.0.5（2019-5-22 16:13:22）
+
+- Added the function of editing hyperlinks
+
+- 增加了编辑超链接的功能
+
+
+
+[more version info（更多版本信息）](https://github.com/ArchieHurry/vueRichTextEditor/blob/master/version.md)

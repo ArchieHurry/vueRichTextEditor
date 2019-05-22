@@ -3,8 +3,8 @@
     <button @click="getContent()">getContent</button>
     <button @click="$refs.editor.setHtml('<h1>123</h1><h2>123</h2>')">setContent</button>
     <button @click="$refs.editor.appendHtml('<h1>123</h1><h2>123</h2>')">appendContent</button>
-    <button @click="$refs.editor.insertHtml('pppppppaaa')">insertHtml</button>
-    <vue-rich-editor :canEdit="true" ref="editor"></vue-rich-editor>
+    <button @click="$refs.editor.insertHtml('<ol><li>asfasfafaf</li><li>afaf</li></ol>')">insertHtml</button>
+    <vueRichTextEditor :canEdit="true" ref="editor"></vueRichTextEditor>
   </div>
 </template>
 
