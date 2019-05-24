@@ -1,13 +1,16 @@
 {
   "name": "vue-rich-text-editor",
   "description": "Rich text editor made with vue",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "author": "archiehurry <534995272@qq.com>",
   "license": "MIT",
   "main": "./dist/vrte.js",
   "keywords": [
     "vue-rich-editor",
     "vue-rich-text-editor",
+    "vuerichtexteditor",
+    "vueRichTextEditor",
+    "vue",
     "rich-text-editor"
   ],
   "homepage": "https://github.com/ArchieHurry/vueRichEditor",

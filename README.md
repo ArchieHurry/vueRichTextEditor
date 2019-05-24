@@ -1,13 +1,13 @@
 # vueRichTextEditor
 
-[![install size](https://packagephobia.now.sh/badge?p=vue-rich-text-editor)](https://packagephobia.now.sh/result?p=vueshapeimg)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/40bbe81620c94cc3bf179b2df808ad07)](https://app.codacy.com/project/ArchieHurry/vueRichEditor)
+[![install size](https://packagephobia.now.sh/badge?p=vue-rich-text-editor)](https://packagephobia.now.sh/result?p=vue-rich-text-editor)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/40bbe81620c94cc3bf179b2df808ad07)](https://app.codacy.com/project/ArchieHurry/vueRichTextEditor)
 
 > Rich Text Editor made with Vue
 
-[If you like, please give me a star ♪(^∇^*)](https://github.com/ArchieHurry/vueRichEditor)
+[If you like, please give me a star ♪(^∇^*)](https://github.com/ArchieHurry/vueRichTextEditor)
 
-[如果你喜欢它，可以给我星星吗 ♪(^∇^*)](https://github.com/ArchieHurry/vueRichEditor)
+[如果你喜欢它，可以给我星星吗 ♪(^∇^*)](https://github.com/ArchieHurry/vueRichTextEditor)
 
 ![demo](http://www.bqmyweb.cn/vuerichtexteditor/0.0.6.PNG)
 
@@ -18,8 +18,8 @@
 ### How to use
 
 ``` bash
-import vueRichEditor from 'vue-rich-text-editor';
-Vue.use(vueRichEditor)
+import vueRichTextEditor from 'vue-rich-text-editor';
+Vue.use(vueRichTextEditor)
 
 <vueRichTextEditor ref="editor"></vueRichTextEditor>
 ```
@@ -45,7 +45,7 @@ Vue.use(vueRichEditor)
 |setHtml|-|-|
 |getHtml|-|-|
 |insertHtml|Insert HTML at the cursor|html|
-|setLanguage|Setting Language, Chinese and English can be set by langType|[language.js](https://github.com/ArchieHurry/vueRichEditor/tree/master/src/components/language.js)|
+|setLanguage|Setting Language, Chinese and English can be set by langType|[language.js](https://github.com/ArchieHurry/vueRichTextEditor/tree/master/src/components/language.js)|
 
 #### emit
 |emit name|Description

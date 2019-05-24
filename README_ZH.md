@@ -34,7 +34,7 @@ Vue.use(vueRichEditor)
 |setHtml|-|-|
 |getHtml|-|-|
 |insertHtml|在光标处插入html|html|
-|setLanguage|设置语言，中英文可以通过langType设置|[见language.js](https://github.com/ArchieHurry/vueRichEditor/tree/master/src/components/language.js)|
+|setLanguage|设置语言，中英文可以通过langType设置|[见language.js](https://github.com/ArchieHurry/vueRichTextEditor/tree/master/src/components/language.js)|
 
 #### emit
 |emit 名称|描述|
