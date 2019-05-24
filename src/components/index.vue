@@ -126,13 +126,16 @@
         type: Function,
         default (e) {
           let files = (e.target || e.srcElement).files;
-          for (let i = 0; i < files.length; i++) {
+          let fun = function (file) {
             let reader = new FileReader();
-            reader.readAsDataURL(files[0]);
+            reader.readAsDataURL(file);
             reader.onload(function () {
               s.insertHtml(s.confirmCallBack("img",`<img src="${reader.result}" style="max-width: 100%">`));
               reader.onload = null;
             });
+          };
+          for (let i = 0; i < files.length; i++) {
+            fun(files[i]);
           }
           s.$refs.imgFile.value = "";
         }
@@ -140,7 +143,7 @@
     },
     watch: {
       show : {
-        handler: function (val) {
+        handler (val) {
           if (!val.A) {
             this.config.A.link = "";
             this.config.A.value = "";
@@ -170,7 +173,9 @@
       setHtml (html) {
         const s = this;
         s.content.innerHTML = html;
-        if (s.timelyGetHtml) s.$emit("htmlChange", s.content.innerHTML);
+        if (s.timelyGetHtml) {
+          s.$emit("htmlChange", s.content.innerHTML);
+        }
       },
       getHtml () {
         return this.content.innerHTML;
@@ -181,7 +186,9 @@
           s.__replaceNode(s.nodes[0], html);
           return;
         }
-        if (!s.canEdit) return;
+        if (!s.canEdit) {
+          return;
+        }
         let dom = s.content;
         if (!s.sel || !s.range) { // 没有取得焦点插入末尾
           dom.innerHTML = dom.innerHTML + html;
@@ -210,14 +217,16 @@
           document.selection.createRange().pasteHTML(html);
         }
         s.__getSelAndRange();
-        if (s.timelyGetHtml) s.$emit("htmlChange", s.content.innerHTML);
+        if (s.timelyGetHtml) {
+          s.$emit("htmlChange", s.content.innerHTML);
+        }
       },
       setLanguage (language) {
         this.lang = language;
       },
       __confirm (type) {
         const s = this, o = this.config[type];
-        let str = ""
+        let str = "";
         switch (type) {
           case "A":
             str = `<a href="${o.link}">${o.value}</a>`;
@@ -227,7 +236,7 @@
             break;
         }
         s.insertHtml(s.confirmCallBack(type, str));
-        s.show[type] = false
+        s.show[type] = false;
       },
       __replaceNode (node, html) {
         if (!html) {
@@ -276,14 +285,18 @@
         html = html.replace(/<br><br>/g, "");
         html = html.replace(/<([a-z]+?)(?:\s+?[^>]*?)?>\s*?<\/\1>/ig,"");
         el.innerHTML = html;
-        if (s.nodes.length === 1) s.nodes[0].parentNode.replaceChild(el, s.nodes[0]);
+        if (s.nodes.length === 1) {
+          s.nodes[0].parentNode.replaceChild(el, s.nodes[0]);
+        }
         else { s.range.deleteContents();s.range.insertNode(el); }
         el = null;cloneRange = null;
       },
       __formatNodes (tagName) {
         const s = this;
         s.__getSelAndRange();
-        if (!s.range) return;
+        if (!s.range) {
+          return;
+        }
         let cloneRange = s.range.cloneContents();
         let el = document.createElement(tagName);
         el.appendChild(cloneRange);
@@ -314,7 +327,7 @@
       },
       __getSelAndRange () {
         this.sel = window.getSelection();
-        try { this.range = this.sel.getRangeAt(0);} catch (e) { this.range = null }
+        try { this.range = this.sel.getRangeAt(0);} catch (e) { this.range = null; }
       },
       __configTarget (target) {
         switch (target.tagName) {
@@ -361,7 +374,7 @@
         });
       }
     }
-  }
+  };
 </script>
 
 <style lang="scss">
