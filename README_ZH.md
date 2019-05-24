@@ -4,6 +4,8 @@
 
 ### 怎样使用
 
+## [在线例子](http://www.bqmyweb.cn/vuerichtexteditor/)
+
 ``` bash
 import vueRichEditor from 'vue-rich-text-editor';
 Vue.use(vueRichEditor)

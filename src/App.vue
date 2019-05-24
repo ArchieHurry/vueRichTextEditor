@@ -30,5 +30,5 @@ export default {
       this.$refs.console.innerText = this.$refs.editor.getHtml();
     }
   }
-}
+};
 </script>

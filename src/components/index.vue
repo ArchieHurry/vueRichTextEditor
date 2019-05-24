@@ -68,8 +68,8 @@
 </template>
 
 <script>
-  import E from './eventHandler'
-  import language from './language'
+  import E from "./eventHandler";
+  import language from "./language";
   let s = null;
   export default {
     name: "vueRichTextEditor",
@@ -82,18 +82,18 @@
         },
         config: {
           A: {
-            link: '',
-            value: ''
+            link: "",
+            value: ""
           },
           img: {
-            link: '',
-            width: '',
-            height: ''
+            link: "",
+            width: "",
+            height: ""
           }
         },
         content: null,
         toolbar: null,
-        timeId: '',
+        timeId: "",
         sel: null,
         range: null,
         nodes: []
@@ -102,11 +102,11 @@
     props: {
       langType: {
         type: String,
-        default: 'EN'
+        default: "EN"
       },
       height: {
         type: String,
-        default: '380px'
+        default: "380px"
       },
       canEdit: {
         type: Boolean,
@@ -129,12 +129,12 @@
           for (let i = 0; i < files.length; i++) {
             let reader = new FileReader();
             reader.readAsDataURL(files[0]);
-            reader.onload = function () {
-              s.insertHtml(s.confirmCallBack('img',`<img src="${reader.result}" style="max-width: 100%">`));
+            reader.onload(function () {
+              s.insertHtml(s.confirmCallBack("img",`<img src="${reader.result}" style="max-width: 100%">`));
               reader.onload = null;
-            }
+            });
           }
-          s.$refs.imgFile.value = '';
+          s.$refs.imgFile.value = "";
         }
       }
     },
@@ -142,13 +142,13 @@
       show : {
         handler: function (val) {
           if (!val.A) {
-            this.config.A.link = '';
-            this.config.A.value = '';
+            this.config.A.link = "";
+            this.config.A.value = "";
           }
           if (!val.img) {
-            this.config.img.link = '';
-            this.config.img.width = '';
-            this.config.img.height = '';
+            this.config.img.link = "";
+            this.config.img.width = "";
+            this.config.img.height = "";
           }
         },
         deep: true
@@ -170,7 +170,7 @@
       setHtml (html) {
         const s = this;
         s.content.innerHTML = html;
-        if (s.timelyGetHtml) s.$emit('htmlChange', s.content.innerHTML);
+        if (s.timelyGetHtml) s.$emit("htmlChange", s.content.innerHTML);
       },
       getHtml () {
         return this.content.innerHTML;
@@ -191,7 +191,7 @@
         if (window.getSelection) {
           if (sel.getRangeAt && sel.rangeCount) {
             range.deleteContents(); // 移除range中的内容
-            let el = document.createElement('div');
+            let el = document.createElement("div");
             el.innerHTML = html;
             let frag = document.createDocumentFragment(), node, lastNode;
             while ((node = el.firstChild)) {
@@ -210,14 +210,14 @@
           document.selection.createRange().pasteHTML(html);
         }
         s.__getSelAndRange();
-        if (s.timelyGetHtml) s.$emit('htmlChange', s.content.innerHTML);
+        if (s.timelyGetHtml) s.$emit("htmlChange", s.content.innerHTML);
       },
       setLanguage (language) {
         this.lang = language;
       },
       __confirm (type) {
         const s = this, o = this.config[type];
-        let str = ''
+        let str = ""
         switch (type) {
           case "A":
             str = `<a href="${o.link}">${o.value}</a>`;
@@ -234,7 +234,7 @@
           node.parentNode.removeChild(node);
           return;
         }
-        let div = document.createElement('div');
+        let div = document.createElement("div");
         div.innerHTML = html;
         node.parentNode.replaceChild(div.firstChild, node);
       },
@@ -258,21 +258,23 @@
         let el = document.createElement(tagName);
         el.appendChild(cloneRange);
         let html = el.innerHTML;
-        if (s.nodes.length === 1) html = s.nodes[0].innerHTML;
-        html = html.replace(/<h1>/g, '');
-        html = html.replace(/<\/h1>/g, '<br>');
-        html = html.replace(/<h2>/g, '');
-        html = html.replace(/<\/h2>/g, '<br>');
-        html = html.replace(/<h3>/g, '');
-        html = html.replace(/<\/h3>/g, '<br>');
-        html = html.replace(/<h4>/g, '');
-        html = html.replace(/<\/h4>/g, '<br>');
-        html = html.replace(/<h5>/g, '');
-        html = html.replace(/<\/h5>/g, '<br>');
-        html = html.replace(/<p><\/p>/g, '');
-        html = html.replace(/<p><br><\/p>/g, '');
-        html = html.replace(/<br><br>/g, '');
-        html = html.replace(/<([a-z]+?)(?:\s+?[^>]*?)?>\s*?<\/\1>/ig,'');
+        if (s.nodes.length === 1) {
+          html = s.nodes[0].innerHTML;
+        }
+        html = html.replace(/<h1>/g, "");
+        html = html.replace(/<\/h1>/g, "<br>");
+        html = html.replace(/<h2>/g, "");
+        html = html.replace(/<\/h2>/g, "<br>");
+        html = html.replace(/<h3>/g, "");
+        html = html.replace(/<\/h3>/g, "<br>");
+        html = html.replace(/<h4>/g, "");
+        html = html.replace(/<\/h4>/g, "<br>");
+        html = html.replace(/<h5>/g, "");
+        html = html.replace(/<\/h5>/g, "<br>");
+        html = html.replace(/<p><\/p>/g, "");
+        html = html.replace(/<p><br><\/p>/g, "");
+        html = html.replace(/<br><br>/g, "");
+        html = html.replace(/<([a-z]+?)(?:\s+?[^>]*?)?>\s*?<\/\1>/ig,"");
         el.innerHTML = html;
         if (s.nodes.length === 1) s.nodes[0].parentNode.replaceChild(el, s.nodes[0]);
         else { s.range.deleteContents();s.range.insertNode(el); }
@@ -286,19 +288,19 @@
         let el = document.createElement(tagName);
         el.appendChild(cloneRange);
         s.__getNodes();
-        if ('H1,H2,H3,H4,H5,P'.indexOf(tagName) > -1) { s.__formatH(tagName); return; }
+        if ("H1,H2,H3,H4,H5,P".indexOf(tagName) > -1) { s.__formatH(tagName); return; }
         if (el.children.length === 1) { // 还原
           if (el.children[0].tagName === el.tagName) {
-            let mid = document.createElement('span');
+            let mid = document.createElement("span");
             let html = el.innerHTML;
             let str = `<${tagName.toLowerCase()}>`;
-            str = new RegExp(str, 'g');
+            str = new RegExp(str, "g");
             let str1 = `</${tagName.toLowerCase()}>`;
-            str1 = new RegExp(str1, 'g');
-            html = html.replace(str, '');
-            html = html.replace(str1, '');
-            html = html.replace(/<span>/g, '');
-            html = html.replace(/<\/span>/g, '');
+            str1 = new RegExp(str1, "g");
+            html = html.replace(str, "");
+            html = html.replace(str1, "");
+            html = html.replace(/<span>/g, "");
+            html = html.replace(/<\/span>/g, "");
             mid.innerHTML = html;
             s.range.deleteContents();
             s.range.insertNode(mid);
@@ -316,14 +318,14 @@
       },
       __configTarget (target) {
         switch (target.tagName) {
-          case 'A':
+          case "A":
             this.config.A = {
               link: target.href,
               value: target.innerText
             };
             this.show.A = true;
             break;
-          case 'IMG':
+          case "IMG":
             this.config.img = {
               link: target.src,
               width: target.width,
@@ -335,26 +337,26 @@
       },
       __init () {
         const s = this;
-        s.toolbar = document.getElementById('toolbar' + s.timeId);
-        s.content = document.getElementById('content' + s.timeId);
-        E.addHandler(s.content,'mouseup', function () {
+        s.toolbar = document.getElementById("toolbar" + s.timeId);
+        s.content = document.getElementById("content" + s.timeId);
+        E.addHandler(s.content,"mouseup", function () {
           s.__getSelAndRange();
           s.__getNodes();
         });
-        E.addHandler(s.content, 'click', function (e) {
+        E.addHandler(s.content, "click", function (e) {
           if (s.show.A) { s.show.A= false; }
           if (s.show.img) { s.show.img= false; }
-          if ('A,IMG'.indexOf((e.target || e.srcElement).tagName) > -1) {
+          if ("A,IMG".indexOf((e.target || e.srcElement).tagName) > -1) {
             if (!s.nodes.length) {
               s.nodes.push(e.target || e.srcElement);
             }
             s.__configTarget(e.target || e.srcElement);
           }
         });
-        E.addHandler(s.content,'input', function () {
+        E.addHandler(s.content,"input", function () {
           s.__getSelAndRange();
           if (s.timelyGetHtml) {
-            s.$emit('htmlChange', s.content.innerHTML);
+            s.$emit("htmlChange", s.content.innerHTML);
           }
         });
       }

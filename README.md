@@ -1,8 +1,19 @@
 # vueRichTextEditor
 
+[![install size](https://packagephobia.now.sh/badge?p=vue-rich-text-editor)](https://packagephobia.now.sh/result?p=vueshapeimg)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/40bbe81620c94cc3bf179b2df808ad07)](https://app.codacy.com/project/ArchieHurry/vueRichEditor)
+
 > Rich Text Editor made with Vue
 
+[If you like, please give me a star ♪(^∇^*)](https://github.com/ArchieHurry/vueRichEditor)
+
+[如果你喜欢它，可以给我星星吗 ♪(^∇^*)](https://github.com/ArchieHurry/vueRichEditor)
+
+![demo](http://www.bqmyweb.cn/vuerichtexteditor/0.0.6.PNG)
+
 ## English [中文文档](https://github.com/ArchieHurry/vueRichTextEditor/blob/master/README_ZH.md)
+
+## [onlineDemo](http://www.bqmyweb.cn/vuerichtexteditor/)
 
 ### How to use
 
