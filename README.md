@@ -1,7 +1,7 @@
 # vueRichTextEditor
 
 [![install size](https://packagephobia.now.sh/badge?p=vue-rich-text-editor)](https://packagephobia.now.sh/result?p=vue-rich-text-editor)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/40bbe81620c94cc3bf179b2df808ad07)](https://app.codacy.com/project/ArchieHurry/vueRichTextEditor)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/40bbe81620c94cc3bf179b2df808ad07)](https://app.codacy.com/project/ArchieHurry/vueRichTextEditor/dashboard)
 
 > Rich Text Editor made with Vue
 
