@@ -1,57 +1,94 @@
 <template>
-  <div :id="`vueRichEditor${timeId}`" :style="{height: height}" class="vre_vueRichEditor">
+  <div :id="`vueRichEditor${timeId}`"  class="vre_vueRichEditor">
     <div :id="`toolbar${timeId}`" class="vre_toolbar">
       <div class="vre_buttonDiv vre_hover">
-        <span>H</span>
+        <span class="iconfont icon-H" :title="lang.H"></span>
         <div class="vre_hoverDiv">
-          <p @click="formatNodes('H1')">H1</p>
-          <p @click="formatNodes('H2')">H2</p>
-          <p @click="formatNodes('H3')">H3</p>
-          <p @click="formatNodes('H4')">H4</p>
-          <p @click="formatNodes('H5')">H5</p>
-          <p @click="formatNodes('P')">p</p>
+          <p @click="__formatNodes('H1')"><i class="iconfont icon-h1"></i></p>
+          <p @click="__formatNodes('H2')"><i class="iconfont icon-h2"></i></p>
+          <p @click="__formatNodes('H3')"><i class="iconfont icon-h3"></i></p>
+          <p @click="__formatNodes('H4')"><i class="iconfont icon-h4"></i></p>
+          <p @click="__formatNodes('H5')"><i class="iconfont icon-h5"></i></p>
+          <p @click="__formatNodes('P')"><i class="iconfont icon-p"></i></p>
         </div>
       </div>
-      <div class="vre_buttonDiv" @click="formatNodes('STRONG')"><span>B</span></div>
-      <div class="vre_buttonDiv"  @click="formatNodes('U')"><span>U</span></div>
-      <div class="vre_buttonDiv" @click="formatNodes('I')"><span>I</span></div>
+      <div class="vre_buttonDiv" @click="__formatNodes('STRONG')"> <span class="iconfont icon-B" :title="lang.B"></span></div>
+      <div class="vre_buttonDiv"  @click="__formatNodes('U')"><span class="iconfont icon-U" :title="lang.U"></span></div>
+      <div class="vre_buttonDiv" @click="__formatNodes('I')"><span class="iconfont icon-I" :title="lang.I"></span></div>
       <div class="vre_buttonDiv">
-        <span @click="show.A = true">A</span>
+        <span class="iconfont icon-link" @click="show.A = true" :title="lang.A"></span>
         <div class="vre_clickDiv" v-show="show.A" style="width: 215px" >
           <p style="text-align: left">
-            link
+            {{lang.A_link}}
             <br>
             <input type="text" v-model="config.A.link">
           </p>
           <p style="text-align: left">
-            value
+            {{lang.A_value}}
             <br>
             <input type="text" v-model="config.A.value">
           </p>
           <p>
-            <button @click='insertHtml(`<a href="${config.A.link}">${config.A.value}</a>`);show.A = false' >confirm</button>
+            <button @click="__confirm('A')">confirm</button>
           </p>
         </div>
       </div>
+      <div class="vre_buttonDiv">
+        <span class="iconfont icon-img" @click="show.img = true" :title="lang.img"></span>
+        <div class="vre_clickDiv" v-show="show.img" style="width: 215px" >
+          <p style="text-align: left">
+            {{lang.img_link}}
+            <br>
+            <input type="text" v-model="config.img.link">
+          </p>
+          <p style="text-align: left">
+            {{lang.img_width}}
+            <br>
+            <input type="text" v-model="config.img.width">
+          </p>
+          <p style="text-align: left">
+            {{lang.img_height}}
+            <br>
+            <input type="text" v-model="config.img.height">
+          </p>
+          <p>
+            <button @click="__confirm('img')" >confirm</button>
+          </p>
+        </div>
+      </div>
+      <div class="vre_buttonDiv">
+        <span class="iconfont icon-uploadImg" :title="lang.uploadImg" @click="$refs.imgFile.click()"></span>
+        <input v-show="false" multiple accept="image/*" type="file" ref="imgFile" @change="imgUploadCallBack">
+      </div>
+      <div style="clear: both"></div>
     </div>
-    <div :id="`content${timeId}`" :contenteditable="canEdit" class="vre_content vre_preview"></div>
+    <div :id="`content${timeId}`" :style="{height: height}" :contenteditable="canEdit" class="vre_content vre_preview"></div>
 <!--    <div class="resizeBar"></div>-->
   </div>
 </template>
 
 <script>
   import E from './eventHandler'
+  import language from './language'
+  let s = null;
   export default {
     name: "vueRichTextEditor",
     data () {
       return {
+        lang: {},
         show: {
-          A: false
+          A: false,
+          img: false
         },
         config: {
           A: {
             link: '',
             value: ''
+          },
+          img: {
+            link: '',
+            width: '',
+            height: ''
           }
         },
         content: null,
@@ -60,12 +97,16 @@
         sel: null,
         range: null,
         nodes: []
-      }
+      };
     },
     props: {
+      langType: {
+        type: String,
+        default: 'EN'
+      },
       height: {
         type: String,
-        default: '400px'
+        default: '380px'
       },
       canEdit: {
         type: Boolean,
@@ -74,47 +115,70 @@
       timelyGetHtml: {
         type: Boolean,
         default: false
+      },
+      confirmCallBack: {
+        type: Function,
+        default (type, html) {
+          return html;
+        }
+      },
+      imgUploadCallBack: {
+        type: Function,
+        default (e) {
+          let files = (e.target || e.srcElement).files;
+          for (let i = 0; i < files.length; i++) {
+            let reader = new FileReader();
+            reader.readAsDataURL(files[0]);
+            reader.onload = function () {
+              s.insertHtml(s.confirmCallBack('img',`<img src="${reader.result}" style="max-width: 100%">`));
+              reader.onload = null;
+            }
+          }
+          s.$refs.imgFile.value = '';
+        }
       }
     },
     watch: {
       show : {
-        handler: function (val, oldVal) {
+        handler: function (val) {
           if (!val.A) {
-            this.config.A.link = ''
-            this.config.A.value = ''
+            this.config.A.link = '';
+            this.config.A.value = '';
+          }
+          if (!val.img) {
+            this.config.img.link = '';
+            this.config.img.width = '';
+            this.config.img.height = '';
           }
         },
         deep: true
       }
     },
     created() {
-      this.timeId = new Date().valueOf()
+      s = this;
+      this.timeId = new Date().valueOf();
+      this.setLanguage(language[this.langType]);
     },
     mounted () {
-      this.__init()
+      this.__init();
     },
     methods: {
       appendHtml  (html) {
         this.range = null;
-        this.insertHtml(html)
+        this.insertHtml(html);
       },
       setHtml (html) {
         const s = this;
         s.content.innerHTML = html;
-        if (s.timelyGetHtml) s.$emit('htmlChange', s.content.innerHTML)
+        if (s.timelyGetHtml) s.$emit('htmlChange', s.content.innerHTML);
       },
       getHtml () {
-        return this.content.innerHTML
-      },
-      __replaceNode (node, html) {
-        let div = document.createElement('div');
-        div.innerHTML = html;
-        node.parentNode.replaceChild(div.firstChild, node)
+        return this.content.innerHTML;
       },
       insertHtml(html) {
         const s = this;
         if (s.nodes.length === 1) {
-          s.__replaceNode(s.nodes[0], html)
+          s.__replaceNode(s.nodes[0], html);
           return;
         }
         if (!s.canEdit) return;
@@ -146,19 +210,47 @@
           document.selection.createRange().pasteHTML(html);
         }
         s.__getSelAndRange();
-        if (s.timelyGetHtml) s.$emit('htmlChange', s.content.innerHTML)
+        if (s.timelyGetHtml) s.$emit('htmlChange', s.content.innerHTML);
+      },
+      setLanguage (language) {
+        this.lang = language;
+      },
+      __confirm (type) {
+        const s = this, o = this.config[type];
+        let str = ''
+        switch (type) {
+          case "A":
+            str = `<a href="${o.link}">${o.value}</a>`;
+            break;
+          case "img":
+            str = `<img src="${o.link}" width="${o.width}" height="${o.height}">`;
+            break;
+        }
+        s.insertHtml(s.confirmCallBack(type, str));
+        s.show[type] = false
+      },
+      __replaceNode (node, html) {
+        if (!html) {
+          node.parentNode.removeChild(node);
+          return;
+        }
+        let div = document.createElement('div');
+        div.innerHTML = html;
+        node.parentNode.replaceChild(div.firstChild, node);
       },
       __getNodes () {
         const s = this;
         let sel = s.sel;
         s.nodes = [];
         let flag = false;
-        for (let i = 0; i < s.content.childNodes.length; i++) {
-          let val = s.content.childNodes[i];
-          if (val.isSameNode(sel.getRangeAt(0).startContainer.parentNode) || val.isSameNode(sel.anchorNode)) flag = true;
-          if (flag) s.nodes.push(val);
-          if (val.isSameNode(sel.getRangeAt(0).endContainer.parentNode) || val.isSameNode(sel.focusNode)) flag = false
-        }
+        try {
+          for (let i = 0; i < s.content.childNodes.length; i++) {
+            let val = s.content.childNodes[i];
+            if (val.isSameNode(sel.getRangeAt(0).startContainer.parentNode) || val.isSameNode(sel.anchorNode)) { flag = true; }
+            if (flag) { s.nodes.push(val); }
+            if (val.isSameNode(sel.getRangeAt(0).endContainer.parentNode) || val.isSameNode(sel.focusNode)) { flag = false; }
+          }
+        } catch (e) {}
       },
       __formatH (tagName) { // h1-h6标签需要在选中的区域全部替换
         const s = this;
@@ -186,7 +278,7 @@
         else { s.range.deleteContents();s.range.insertNode(el); }
         el = null;cloneRange = null;
       },
-      formatNodes (tagName) {
+      __formatNodes (tagName) {
         const s = this;
         s.__getSelAndRange();
         if (!s.range) return;
@@ -231,25 +323,39 @@
             };
             this.show.A = true;
             break;
+          case 'IMG':
+            this.config.img = {
+              link: target.src,
+              width: target.width,
+              height: target.height
+            };
+            this.show.img = true;
+            break;
         }
       },
       __init () {
         const s = this;
         s.toolbar = document.getElementById('toolbar' + s.timeId);
         s.content = document.getElementById('content' + s.timeId);
-        E.addHandler(s.content,'mouseup', function (e) {
+        E.addHandler(s.content,'mouseup', function () {
           s.__getSelAndRange();
           s.__getNodes();
         });
         E.addHandler(s.content, 'click', function (e) {
-          if (s.show.A) s.show.A= false
+          if (s.show.A) { s.show.A= false; }
+          if (s.show.img) { s.show.img= false; }
           if ('A,IMG'.indexOf((e.target || e.srcElement).tagName) > -1) {
-            s.__configTarget(e.target || e.srcElement)
+            if (!s.nodes.length) {
+              s.nodes.push(e.target || e.srcElement);
+            }
+            s.__configTarget(e.target || e.srcElement);
           }
         });
         E.addHandler(s.content,'input', function () {
           s.__getSelAndRange();
-          if (s.timelyGetHtml) s.$emit('htmlChange', s.content.innerHTML)
+          if (s.timelyGetHtml) {
+            s.$emit('htmlChange', s.content.innerHTML);
+          }
         });
       }
     }
@@ -257,17 +363,22 @@
 </script>
 
 <style lang="scss">
+  @import url("./font.css");
   .vre{
     &_vueRichEditor{
       * {
         padding: 0;
         margin: 0;
       }
+      .iconfont{
+        font-size: 14px;
+        font-weight: bold;
+      }
       border: 1px solid #cccccc;
       position: relative;
     }
     &_toolbar {
-      height: 23px;
+      /*min-height: 23px;*/
       background-color: #DCE8E8;
       color: #555555;
       border-bottom: 1px solid #cccccc;
@@ -298,14 +409,11 @@
       width: 16px;
       padding: 5px;
       float: left;
-      &:hover{ span{font-weight: bold;} }
+      &:hover{ span{ color: black;} }
     }
     &_content {
       width: 100%;
-      top: 24px;
-      bottom: 0;
       background-color: white;
-      position: absolute;
       overflow: auto;
       outline: none;
       ol,ul{
@@ -329,7 +437,7 @@
         padding: 5px 20px;
       }
       p:hover{
-        font-weight: bold;
+        color: black;
       }
     }
     &_clickDiv{
